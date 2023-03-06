@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import OpenAICorrector, { Correction } from "../../services/OpenAi";
 
 const corrector = new OpenAICorrector();
@@ -10,33 +10,44 @@ export default function Composer({
 }) {
   const [composition, setComposition] = useState("");
 
+  const handleSubmit = useCallback(async () => {
+    if (!composition.length) {
+      return;
+    }
+    try {
+      const corrections = await corrector.correctComposition(
+        composition,
+        "Chinese"
+      );
+      if (corrections) {
+        setComposition("");
+        onChange(corrections);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [composition, onChange]);
+
   return (
-    <>
-      <label htmlFor="me">Foreign Language Composition</label>
+    <form onSubmit={handleSubmit}>
+      <label className="form-label" htmlFor="me">
+        Foreign Language Composition
+      </label>
       <textarea
+        className="form-control"
         id="me"
+        style={{ height: 500 }}
         onChange={(e) => setComposition(e.target.value)}
         value={composition}
       />
+      <br />
       <button
         type="button"
-        onClick={async () => {
-          try {
-            const corrections = await corrector.correctComposition(
-              composition,
-              "Chinese"
-            );
-            if (corrections) {
-              setComposition("");
-              onChange(corrections);
-            }
-          } catch (e) {
-            console.error(e);
-          }
-        }}
+        className="btn btn-secondary"
+        onClick={handleSubmit}
       >
         Submit
       </button>
-    </>
+    </form>
   );
 }

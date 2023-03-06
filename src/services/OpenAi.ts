@@ -4,6 +4,7 @@ import { LOCAL_STORAGE_COMPOSITION_KEY } from "../constants";
 const configuration = new Configuration({
   apiKey: process.env.REACT_APP_OPEN_AI_SECRET,
 });
+
 const openai = new OpenAIApi(configuration);
 
 export type Correction = {
@@ -31,6 +32,13 @@ export function getCompositions() {
   );
 }
 
+export function deleteComposition(key: string) {
+  let stored = getCompositions();
+
+  stored = delete stored[key];
+  localStorage.setItem(LOCAL_STORAGE_COMPOSITION_KEY, JSON.stringify(stored));
+}
+
 export default class OpenAICorrector {
   async correctComposition(composition: string, compositionLanguage: string) {
     const response = await openai.createChatCompletion({
@@ -38,11 +46,11 @@ export default class OpenAICorrector {
       messages: [
         {
           role: "system",
-          content: "Reply only with JSON",
+          content: "Reply only with JSON.",
         },
         {
           role: "system",
-          content: `I will send you a paragraph of text in ${compositionLanguage} that I want you to correct for any grammar or vocabulary errors. The response format is an array of objects. For each sentence of the paragraph, create an object which has an 'originalText' property (the original text), a 'correctedText' property (grammatically correct version of the text in ${compositionLanguage}) and a 'reason' property, giving a reason for the correction in English. The reason can be an empty string if there are no errors.`,
+          content: `I will send you a paragraph of text in ${compositionLanguage} that I want you to correct for any grammar or vocabulary errors. The response format is an array of objects. For each sentence of the paragraph, create an object which has an 'originalText' property (the original text), a 'correctedText' property (grammatically correct version of the text in ${compositionLanguage}) and a 'reason' property, giving a reason for the correction in English. The reason can be an empty string if there are no errors. The 'reason' property needs to be written in English. The composition may also contain English words. Please give the correct word in the 'reason' field.`,
         },
         {
           role: "user",
