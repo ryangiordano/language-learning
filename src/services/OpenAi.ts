@@ -1,4 +1,5 @@
 import { Configuration, OpenAIApi } from "openai";
+import { LOCAL_STORAGE_COMPOSITION_KEY } from "../constants";
 
 const configuration = new Configuration({
   apiKey: process.env.REACT_APP_OPEN_AI_SECRET,
@@ -10,6 +11,25 @@ export type Correction = {
   correctedText: string;
   originalText: string;
 };
+
+/** We will be saving the correction to local storage for now, but in the future we'd want them to be associated with a logged in user, and persist */
+export function saveCorrection(correction: Correction[], key: number) {
+  let stored = getCompositions();
+
+  stored = { ...stored, [key]: correction };
+  localStorage.setItem(LOCAL_STORAGE_COMPOSITION_KEY, JSON.stringify(stored));
+}
+
+export function getComposition(key: number) {
+  const stored = getCompositions();
+  return stored[key];
+}
+
+export function getCompositions() {
+  return JSON.parse(
+    localStorage.getItem(LOCAL_STORAGE_COMPOSITION_KEY) ?? "{}"
+  );
+}
 
 export default class OpenAICorrector {
   async correctComposition(composition: string, compositionLanguage: string) {
