@@ -9,6 +9,7 @@ import ComposePage from "./pages/ComposePage";
 import CompositionsPage from "./pages/CompositionsPage";
 import CompositionPage from "./pages/CompositionPage";
 import Navbar from "./nav/Navbar";
+import { LoginPage } from "./pages/LoginPage";
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
               <Route path="/compose" element={<ComposePage />} />
               <Route path="/compositions" element={<CompositionsPage />} />
               <Route path="/composition/:key" element={<CompositionPage />} />
+              <Route path="/login" element={<LoginPage />} />
               <Route path={"*"} element={<Navigate to="/compose" />} />
             </Switch>
           </div>

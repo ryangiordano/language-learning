@@ -1,12 +1,12 @@
-import { Correction } from "../../services/OpenAi";
+import { CompositionModel, CorrectionModel } from "../../services/client";
 
-function CompositionLineItem({ correction }: { correction: Correction }) {
+function CompositionLineItem({ correction }: { correction: CorrectionModel }) {
   const hasCorrection = correction.reason.length > 0;
 
   return (
     <>
-      <div>{correction.originalText}</div>
-      {hasCorrection ? <div>{correction.correctedText}</div> : <></>}
+      <div>{correction.originalContent}</div>
+      {hasCorrection ? <div>{correction.correctedContent}</div> : <></>}
       {hasCorrection ? <i>{correction.reason}</i> : <></>}
       <br />
       <br />
@@ -16,13 +16,18 @@ function CompositionLineItem({ correction }: { correction: Correction }) {
 
 export default function Composition({
   corrections,
+  composition,
 }: {
-  corrections: Correction[];
+  composition: CompositionModel;
+  corrections: CorrectionModel[];
 }) {
+  console.log(corrections);
   return (
     <>
+      <div>{composition.content}</div>
+      <hr />
       {corrections.map((correction) => (
-        <div key={correction.originalText}>
+        <div key={correction.originalContent}>
           <CompositionLineItem correction={correction} />
         </div>
       ))}

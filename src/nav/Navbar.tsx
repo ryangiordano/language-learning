@@ -12,6 +12,7 @@ export default function Navbar() {
           <ul className="navbar-nav me-auto">
             <li className="nav-item">
               <Link to="/compositions">Compositions</Link>
+              <Link to="/login">Login</Link>
             </li>
           </ul>
         </div>

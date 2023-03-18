@@ -1,9 +1,9 @@
-import { Correction } from "../../services/OpenAi";
+import { CompositionModel } from "../../services/client";
 
 export default function CompositionPreview({
   composition,
 }: {
-  composition: Correction[];
+  composition: CompositionModel;
 }) {
-  return <>{composition[0].originalText}...</>;
+  return <>{composition.content}...</>;
 }

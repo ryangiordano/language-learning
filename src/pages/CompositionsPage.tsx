@@ -1,10 +1,27 @@
 import { Link } from "react-router-dom";
-import { deleteComposition, getCompositions } from "../services/OpenAi";
 import CompositionPreview from "../composition/components/CompositionPreview";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  deleteComposition,
+  getCompositions,
+} from "../services/composition/composition";
+import { CompositionModel } from "../services/client";
 
 export default function CompositionsPage() {
-  const [compositions, setCompositions] = useState(getCompositions());
+  // TODO: Get generated types from the server
+  const [compositions, setCompositions] = useState<CompositionModel[]>([]);
+
+  // TODO: Replace with react query
+  useEffect(() => {
+    async function queryCompositions() {
+      const compositions = await getCompositions();
+      if (compositions?.data.length) {
+        setCompositions(compositions.data);
+      }
+    }
+    queryCompositions();
+  }, []);
+
   const compositionKeys = Object.keys(compositions);
   if (!compositionKeys.length) {
     return (
@@ -15,18 +32,18 @@ export default function CompositionsPage() {
   }
   return (
     <>
-      {Object.keys(compositions).map((key, index, arr) => (
-        <div key={key}>
-          <CompositionPreview composition={compositions[key]} />
+      {compositions.map((composition, index, arr) => (
+        <div key={composition._id}>
+          <CompositionPreview composition={composition} />
           <div style={{ display: "flex", gap: "10px" }}>
-            <Link to={`/composition/${key}`}>
+            <Link to={`/composition/${composition._id}`}>
               <button className="btn btn-secondary">View</button>
             </Link>
             <button
               className="btn btn-dark"
               onClick={() => {
-                deleteComposition(key);
-                setCompositions(getCompositions());
+                deleteComposition(composition._id);
+                // setCompositions(getCompositions());
               }}
             >
               Delete
